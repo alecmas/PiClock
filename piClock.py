@@ -5,11 +5,12 @@ from PIL import ImageTk, Image
 
 # creating tkinter window 
 root = Tk() 
-root.overrideredirect(True)
+root.overrideredirect(True) # for removing borders on window
+
 frame = Frame(root)
 frame.pack()
 
-# Create a canvas
+# create a canvas
 canvas = Canvas(frame, bg="black", width=1520, height=350, highlightthickness=0)
 canvas.pack(side = BOTTOM)
 
@@ -29,8 +30,7 @@ def getNumberImagePath(number):
 	}
 	return switcher.get(number, "invalid image number")
 
-# This function is used to  
-# display time on the label 
+# TODO: need to clean this up and comment it
 def time(): 
 	timeString = strftime("%I%M%S")
 	print(timeString)
@@ -50,14 +50,15 @@ def time():
 
 	canvas.after(1000, time)
 
+# TODO: enable toggling of styles
 def toggle():
 	print("toggled")
 	canvas.delete("all")
 
-
 buttonBG = Button(text = "Switch", command = toggle)
 buttonBG.pack( side = BOTTOM)
 
+# run time function
 time()
   
 root.mainloop() # infinite running loop
