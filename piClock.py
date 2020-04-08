@@ -21,7 +21,7 @@ running = True
 
 # list of all possible styles
 styleList = ["fancy",
-			"nba"]
+            "nba"]
 
 # iterator for style list
 styleCycle = cycle(styleList)
@@ -30,83 +30,83 @@ styleCycle = cycle(styleList)
 style = next(styleCycle)
 
 # initialize images to default style
-canvas.image0 = ImageTk.PhotoImage(Image.open("C:/Users/alecm/Desktop/PiClock/" + style + "/0.jpg"))
-canvas.image1 = ImageTk.PhotoImage(Image.open("C:/Users/alecm/Desktop/PiClock/" + style + "/0.jpg"))
-canvas.image2 = ImageTk.PhotoImage(Image.open("C:/Users/alecm/Desktop/PiClock/" + style + "/0.jpg"))
-canvas.image3 = ImageTk.PhotoImage(Image.open("C:/Users/alecm/Desktop/PiClock/" + style + "/0.jpg"))
-canvas.image4 = ImageTk.PhotoImage(Image.open("C:/Users/alecm/Desktop/PiClock/" + style + "/0.jpg"))
-canvas.image5 = ImageTk.PhotoImage(Image.open("C:/Users/alecm/Desktop/PiClock/" + style + "/0.jpg"))
+canvas.image0 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
+canvas.image1 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
+canvas.image2 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
+canvas.image3 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
+canvas.image4 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
+canvas.image5 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
 
 # put images in list for easier modification later
 imageList = [canvas.image0,
-			canvas.image1,
-			canvas.image2,
-			canvas.image3,
-			canvas.image4,
-			canvas.image5]
+            canvas.image1,
+            canvas.image2,
+            canvas.image3,
+            canvas.image4,
+            canvas.image5]
 
 # get image corresponding to number
 def getNumberImagePath(number):
-	switcher = {
-		"0": "C:/Users/alecm/Desktop/PiClock/" + style + "/0.jpg",
-		"1": "C:/Users/alecm/Desktop/PiClock/" + style + "/1.jpg",
-		"2": "C:/Users/alecm/Desktop/PiClock/" + style + "/2.jpg",
-		"3": "C:/Users/alecm/Desktop/PiClock/" + style + "/3.jpg",
-		"4": "C:/Users/alecm/Desktop/PiClock/" + style + "/4.jpg",
-		"5": "C:/Users/alecm/Desktop/PiClock/" + style + "/5.jpg",
-		"6": "C:/Users/alecm/Desktop/PiClock/" + style + "/6.jpg",
-		"7": "C:/Users/alecm/Desktop/PiClock/" + style + "/7.jpg",
-		"8": "C:/Users/alecm/Desktop/PiClock/" + style + "/8.jpg",
-		"9": "C:/Users/alecm/Desktop/PiClock/" + style + "/9.jpg"
-	}
+    switcher = {
+        "0": "/home/pi/PiClock/" + style + "/0.jpg",
+        "1": "/home/pi/PiClock/" + style + "/1.jpg",
+        "2": "/home/pi/PiClock/" + style + "/2.jpg",
+        "3": "/home/pi/PiClock/" + style + "/3.jpg",
+        "4": "/home/pi/PiClock/" + style + "/4.jpg",
+        "5": "/home/pi/PiClock/" + style + "/5.jpg",
+        "6": "/home/pi/PiClock/" + style + "/6.jpg",
+        "7": "/home/pi/PiClock/" + style + "/7.jpg",
+        "8": "/home/pi/PiClock/" + style + "/8.jpg",
+        "9": "/home/pi/PiClock/" + style + "/9.jpg"
+    }
 
-	return switcher.get(number, "invalid image number")
+    return switcher.get(number, "invalid image number")
 
 # clears canvas and refreshes the time and time images
 def refreshTime():
-	canvas.delete("all")
-	timeString = strftime("%I%M%S")
-	xPos = 0
-	for i in range(6):
-		imageList[i] = ImageTk.PhotoImage(Image.open(getNumberImagePath(timeString[i])))
-		canvas.create_image(xPos, 0, image=imageList[i], anchor='nw')
-		xPos += 250
+    canvas.delete("all")
+    timeString = strftime("%I%M%S")
+    xPos = 0
+    for i in range(6):
+        imageList[i] = ImageTk.PhotoImage(Image.open(getNumberImagePath(timeString[i])))
+        canvas.create_image(xPos, 0, image=imageList[i], anchor='nw')
+        xPos += 250
 
 # main clock function loop which refreshes every 1 sec
 def clock(): 
-	global running
+    global running
 
-	# if running has been set to false, turn the clock off
-	if not running:
-		return
+    # if running has been set to false, turn the clock off
+    if not running:
+        return
 
-	refreshTime()
+    refreshTime()
 
-	canvas.after(1000, clock)
+    canvas.after(1000, clock)
 
 # enable changing of styles
 def changeStyle():
-	global style
+    global style
 
-	# if running has been set to false, keep clock off
-	if not running:
-		return
+    # if running has been set to false, keep clock off
+    if not running:
+        return
 
-	style = next(styleCycle)
+    style = next(styleCycle)
 
-	refreshTime()
+    refreshTime()
 
 # toggles clock on or off
 def power():
-	global running
+    global running
 
-	if running:
-		canvas.delete("all")
-		running = False
-	else:
-		running = True
+    if running:
+        canvas.delete("all")
+        running = False
+    else:
+        running = True
 
-	clock()
+    clock()
 
 buttonPower = Button(text = "On/Off", command = power)
 buttonPower.pack(side = BOTTOM)
