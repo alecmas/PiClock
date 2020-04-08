@@ -5,8 +5,10 @@ from PIL import ImageTk, Image
 from itertools import cycle
 
 # creating tkinter window 
-root = Tk() 
-root.overrideredirect(True) # for removing borders on window
+root = Tk()
+
+# for removing borders on window
+#root.overrideredirect(True) 
 
 # create frame within root window for organization
 frame = Frame(root)
@@ -19,6 +21,9 @@ canvas.pack(side = BOTTOM)
 # keep track of if the clock is running or not
 running = True
 
+# default image path
+imagePath = "/home/pi/PiClock/images/"
+
 # list of all possible styles
 styleList = ["fancy",
             "nba"]
@@ -30,12 +35,12 @@ styleCycle = cycle(styleList)
 style = next(styleCycle)
 
 # initialize images to default style
-canvas.image0 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
-canvas.image1 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
-canvas.image2 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
-canvas.image3 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
-canvas.image4 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
-canvas.image5 = ImageTk.PhotoImage(Image.open("/home/pi/PiClock/" + style + "/0.jpg"))
+canvas.image0 = ImageTk.PhotoImage(Image.open(imagePath + style + "/0.jpg"))
+canvas.image1 = ImageTk.PhotoImage(Image.open(imagePath + style + "/0.jpg"))
+canvas.image2 = ImageTk.PhotoImage(Image.open(imagePath + style + "/0.jpg"))
+canvas.image3 = ImageTk.PhotoImage(Image.open(imagePath + style + "/0.jpg"))
+canvas.image4 = ImageTk.PhotoImage(Image.open(imagePath + style + "/0.jpg"))
+canvas.image5 = ImageTk.PhotoImage(Image.open(imagePath + style + "/0.jpg"))
 
 # put images in list for easier modification later
 imageList = [canvas.image0,
@@ -47,18 +52,10 @@ imageList = [canvas.image0,
 
 # get image corresponding to number
 def getNumberImagePath(number):
-    switcher = {
-        "0": "/home/pi/PiClock/" + style + "/0.jpg",
-        "1": "/home/pi/PiClock/" + style + "/1.jpg",
-        "2": "/home/pi/PiClock/" + style + "/2.jpg",
-        "3": "/home/pi/PiClock/" + style + "/3.jpg",
-        "4": "/home/pi/PiClock/" + style + "/4.jpg",
-        "5": "/home/pi/PiClock/" + style + "/5.jpg",
-        "6": "/home/pi/PiClock/" + style + "/6.jpg",
-        "7": "/home/pi/PiClock/" + style + "/7.jpg",
-        "8": "/home/pi/PiClock/" + style + "/8.jpg",
-        "9": "/home/pi/PiClock/" + style + "/9.jpg"
-    }
+    switcher = {}
+    
+    for i in range(10):
+        switcher[str(i)] = imagePath + style + "/" + str(i) + ".jpg"
 
     return switcher.get(number, "invalid image number")
 
