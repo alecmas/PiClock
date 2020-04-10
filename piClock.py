@@ -15,8 +15,8 @@ w = 2048 # width for the Tk root
 h = 600 # height for the Tk root
 
 # get screen width and height
-ws = root.winfo_screenwidth() # width of the screen
-hs = root.winfo_screenheight() # height of the screen
+ws = root.winfo_screenwidth()
+hs = root.winfo_screenheight()
 
 # calculate x and y coordinates for the Tk root window
 x = 0
@@ -24,10 +24,6 @@ y = 0
 
 # set the dimensions of the screen and where it is placed
 root.geometry('%dx%d+%d+%d' % (w, h, x, y))
-
-# TODO: second window maybe?
-#min_frame = Tk()
-#min_frame.geometry('1040x600+1041+1')
 
 # for removing borders on window
 root.overrideredirect(True) 
@@ -86,11 +82,9 @@ def refreshTime():
     timeString = strftime("%I%M%S")
     xPos = 0
     for i in range(4):
-        imageList[i] = ImageTk.PhotoImage(Image.open(getNumberImagePath(timeString[i])).resize(
-            (341, 600), Image.ANTIALIAS)
-       )        
+        imageList[i] = ImageTk.PhotoImage(Image.open(getNumberImagePath(timeString[i])))       
         canvas.create_image(xPos, 0, image=imageList[i], anchor='nw')
-        xPos += 341
+        xPos += 512
 
 # main clock function loop which refreshes every 1 sec
 def clock(): 
