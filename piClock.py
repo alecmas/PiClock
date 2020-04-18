@@ -6,10 +6,9 @@ from itertools import cycle
 import time # TODO: clean up imports
 
 # INSTRUCTIONS:
-# press/click once to change style
-# press/hold for 5 seconds to exit clock
+# click on screen to open menu
 
-# creating tkinter window 
+# creating tkinter window
 root = Tk()
 w = 2048 # width for the Tk root
 h = 600 # height for the Tk root
@@ -39,7 +38,7 @@ canvas = Canvas(frame, bg="black", width=2048, height=600, highlightthickness=0)
 running = True
 
 # default image path
-imagePath = "/home/pi/PiClock/images/"
+imagePath = "./images/"
 
 # list of all possible styles
 styleList = ["fancy",
@@ -80,6 +79,7 @@ def getNumberImagePath(number):
 def refreshTime():
     canvas.delete("all")
     timeString = strftime("%I%M%S")
+   
     xPos = 0
     for i in range(4):
         imageList[i] = ImageTk.PhotoImage(Image.open(getNumberImagePath(timeString[i])))       
@@ -90,7 +90,7 @@ def refreshTime():
 def clock(): 
     global running
 
-    # if running has been set to false, turn the clock off
+	# if running has been set to false, turn the clock off
     if not running:
         return
 
@@ -122,34 +122,61 @@ def power():
 
     clock()
 
-# initialize variable to keep track of how long screen is pressed
-pressedTime = 0
+########################### MENU SYSTEM ###########################
+# TODO: refactor these button actions
+def pressChangeStyleButton(button):
+	button.configure(bg="grey")
 
-# starts timer for screen being pressed
-def press(event):
-    global pressedTime
-    pressedTime = time.time()
-    print ("pressed at " + str(pressedTime))
+def releaseChangeStyleButton(button, menu):
+    button.configure(bg="white")
+    changeStyle()
+    menu.destroy()
 
-# ends timer for screen being pressed
-def release(event):
-    global pressedTime
-    releaseTime = time.time()
-    print ("released at " + str(releaseTime))
-    if (releaseTime >= pressedTime and releaseTime < pressedTime + 1):
-        changeStyle()
-        
-    if (releaseTime >= pressedTime + 5):
-        print ("exiting clock")
-        root.destroy()
+def pressCloseMenuButton(button):
+	button.configure(bg="grey")
 
-# bind screen press events
-canvas.bind("<ButtonPress-1>", press)
-canvas.bind("<ButtonRelease-1>", release)
+def releaseCloseMenuButton(button, menu):
+    button.configure(bg="white")
+    menu.destroy()
+
+def pressPowerButton(button):
+	button.configure(bg="grey")
+
+def releasePowerButton(button):
+    button.configure(bg="white")
+    root.destroy()
+
+def openMenu(event):
+    menu = Canvas(frame, bg="white", width=2048, height=600, highlightthickness=0)
+
+    changeStyleButton = Canvas(menu, bg="white", width=250, height=30)
+    changeStyleLabel = changeStyleButton.create_text(125, 15, text="Change Style", font=("Arial", 16))
+    changeStyleButton.bind("<ButtonPress-1>", lambda x: pressChangeStyleButton(changeStyleButton))
+    changeStyleButton.bind("<ButtonRelease-1>", lambda x: releaseChangeStyleButton(changeStyleButton, menu))
+
+    closeMenuButton = Canvas(menu, bg="white", width=250, height=30)
+    closeMenuLabel = closeMenuButton.create_text(125, 15, text="Close Menu", font=("Arial", 16))
+    closeMenuButton.bind("<ButtonPress-1>", lambda x: pressCloseMenuButton(closeMenuButton))
+    closeMenuButton.bind("<ButtonRelease-1>", lambda x: releaseCloseMenuButton(closeMenuButton, menu))
+
+    powerButton = Canvas(menu, bg="white", width=250, height=30)
+    powerLabel = powerButton.create_text(125, 15, text="Power Off", font=("Arial", 16))
+    powerButton.bind("<ButtonPress-1>", lambda x: pressPowerButton(powerButton))
+    powerButton.bind("<ButtonRelease-1>", lambda x: releasePowerButton(powerButton))
+
+    menu.place(x = 0, y = 0)
+    changeStyleButton.place(x = 512, y = 50)
+    closeMenuButton.place(x = 512, y = 100)
+    powerButton.place(x = 512, y = 150)
+
+# bind screen press for menu open
+canvas.bind("<ButtonPress-1>", openMenu)
+########################### END MENU SYSTEM ###########################
+
 canvas.pack(side = BOTTOM)
 
 # run time function
 clock()
   
 # infinite running loop
-root.mainloop() 
+root.mainloop()
