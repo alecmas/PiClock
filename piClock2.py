@@ -20,9 +20,9 @@ seed(1)
 
 # creating tkinter window
 root = Tk()
-w = 2048 # width for the Tk root
+w = 1024 # width for the Tk root
 h = 600 # height for the Tk root
-DigitMaxSize = (512, 600) #maximum size of a given digit
+DigitMaxSize = (round(w / 4,0), round(h,0)) #maximum size of a given digit
 
 # get screen width and height
 ws = root.winfo_screenwidth()
@@ -49,6 +49,7 @@ canvas = Canvas(frame, bg="black", width=2048, height=600, highlightthickness=0)
 running = True
 
 # default image path
+Picturemode = 0 #Picture Types, 0 = Pictures without Numbers, 1 = Pictures with Numbers
 BackgroundPath = "./images/backgrounds"
 NumberPath = "./images/Numbers"
 
@@ -57,12 +58,9 @@ f = []
 for (dirpath, dirnames, filenames) in walk(BackgroundPath):
     f.extend(filenames)
     break    
-print(dirnames)
+# print(dirnames)
 
 styleList = dirnames
-# list of all possible styles
-#styleList = ["fancy",
-#            "nba"]
 
 # iterator for style list
 styleCycle = cycle(styleList)
@@ -125,22 +123,21 @@ def getBackgroundImagePath(number):
     for (dirpath, dirnames, filenames) in walk(BackgroundPath+"/"+style):
         f.extend(filenames)
         break    
-    print(filenames)
-    print(len(filenames))
+    # print(filenames)
+    # print(len(filenames))
     
     for i in range(10):
         switcher[str(i)] = BackgroundPath + "/" + style + "/" + filenames[randint(0,len(filenames)-1)]
        
     return switcher.get(number, "invalid image number")
 
-
-
 # clears canvas and refreshes the time and time images
 def refreshTime():
 
     global img
     global junk
-    
+    global w
+
     canvas.delete("all")
     timeString = strftime("%I%M%S")
    
@@ -153,7 +150,7 @@ def refreshTime():
         
         BackgroundImage.thumbnail(DigitMaxSize)
         bwidth, bheight = BackgroundImage.size
-        print(BackgroundImage.size)
+        # print(BackgroundImage.size)
         # Get the dimensions of the foreground image (the digit)
         imageList[i] = (Image.open(getNumberImagePath(timeString[i])))
         imwidth, imheight = imageList[i].size
@@ -162,8 +159,8 @@ def refreshTime():
         junk[i]=ImageTk.PhotoImage(BackgroundImage)
         #canvas.create_image(xPos, 0, image=junk, anchor='nw')
         canvas.create_image(xPos,600,image=junk[i], anchor='sw')
-        xPos += 512
-        
+        xPos += round(w/4,0)
+        # print ("xPos:",xPos)
         
 # main clock function loop which refreshes every 1 sec
 def clock(): 
@@ -181,7 +178,19 @@ def clock():
 
     refreshTime()
 
-    canvas.after(1000, clock)
+    canvas.after(5000, clock)
+
+
+# enable changing of Picture Modes
+def changePictureMode():
+    global Picturemode
+    # if running has been set to false, keep clock off
+    if not running:
+        return
+    Picturemode += 1
+    if Picturemode > 3: Picturemode = 0
+    print ("PictureMode: " + str(Picturemode))
+    refreshTime()
 
 # enable changing of styles
 def changeStyle():
@@ -190,13 +199,24 @@ def changeStyle():
     # if running has been set to false, keep clock off
     if not running:
         return
-
     style = next(styleCycle)
-
     refreshTime()
 
 ########################### MENU SYSTEM ###########################
 # TODO: refactor these button actions
+
+#The Mode button decides which mode is enabled
+# BackgroundPics    = Pictures without Numbers overlaid with numbers (e.g. family pics)
+# NumberPics        = Pictures that already contain numbers (e.g. NBA jerseys)
+def pressChangePictureModeButton(button):
+    print ("pressChangePictureModeButton")
+    button.configure(bg="grey")
+
+def releaseChangePictureModeButton(button, menu):
+    button.configure(bg="white")
+    changePictureMode()
+#    self.canvas.update_idletasks
+
 def pressChangeStyleButton(button):
     button.configure(bg="grey")
 
@@ -220,7 +240,16 @@ def releasePowerButton(button):
     root.destroy()
 
 def openMenu(event):
-    menu = Canvas(frame, bg="white", width=2048, height=600, highlightthickness=0)
+    global h
+    global Picturemode
+
+    menu = Canvas(frame, bg="white", width=w, height=600, highlightthickness=0)
+
+    changePictureModeButton = Canvas(menu, bg="white", width=250, height=30)
+    changePictureModeLabel = changePictureModeButton.create_text(125, 15, text="test " + str(Picturemode), font=("Arial", 14))
+    print ("Menuing!")
+    changePictureModeButton.bind("<ButtonPress-1>", lambda x: pressChangePictureModeButton(changePictureModeButton))
+    changePictureModeButton.bind("<ButtonRelease-1>", lambda x: releaseChangePictureModeButton(changePictureModeButton, menu))
 
     changeStyleButton = Canvas(menu, bg="white", width=250, height=30)
     changeStyleLabel = changeStyleButton.create_text(125, 15, text="Change Style", font=("Arial", 16))
@@ -238,9 +267,13 @@ def openMenu(event):
     powerButton.bind("<ButtonRelease-1>", lambda x: releasePowerButton(powerButton))
 
     menu.place(x = 0, y = 0)
-    changeStyleButton.place(x = 512, y = 50)
-    closeMenuButton.place(x = 512, y = 100)
-    powerButton.place(x = 512, y = 150)
+    changeStyleButton.place(x = 512, y = 100, anchor="center")
+    changePictureModeButton.place(x=512, y=150, anchor="center")
+    closeMenuButton.place(x = 512, y = 200, anchor="center")
+    powerButton.place(x = 512, y = 250, anchor="center")
+
+    menu.create_text(512,10, fill="darkblue", justify="center",font="Times 20 italic bold",
+                     text="Click the bubbles that are multiples of two.")
 
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
@@ -251,7 +284,7 @@ canvas.pack(side = BOTTOM)
 # run time function
 clock()
 
-# Driver code 
+# Driver code
 get_Host_name_IP() #Function call 
 
 
