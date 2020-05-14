@@ -38,15 +38,12 @@ root.geometry('%dx%d+%d+%d' % (w, h, x, y))
 # for removing borders on window
 root.overrideredirect(True) 
 
-# create frame within root window for organization
-frame = Frame(root)
-frame.pack()
+# create frame within root window to hold clock images
+clockFrame = Frame(root)
+clockFrame.pack()
 
 # create a canvas
-canvas = Canvas(frame, bg="black", width=2048, height=600, highlightthickness=0)
-
-# keep track of if the clock is running or not
-running = True
+canvas = Canvas(clockFrame, bg="black", width=2048, height=600, highlightthickness=0)
 
 # default image path
 Picturemode = 0 #Picture Types, 0 = Pictures without Numbers, 1 = Pictures with Numbers
@@ -92,7 +89,6 @@ junk = [canvas.image0,
             canvas.image4,
             canvas.image5]
 
-
 # Function to display hostname and 
 # IP address 
 def get_Host_name_IP(): 
@@ -104,7 +100,6 @@ def get_Host_name_IP():
     except: 
         print("Unable to get Hostname and IP") 
   
-
 # get image corresponding to number
 def getNumberImagePath(number):
     switcher = {}
@@ -133,7 +128,6 @@ def getBackgroundImagePath(number):
 
 # clears canvas and refreshes the time and time images
 def refreshTime():
-
     global img
     global junk
     global w
@@ -164,116 +158,86 @@ def refreshTime():
         
 # main clock function loop which refreshes every 1 sec
 def clock(): 
-    global running
     global timeCheck
-
-# Check to see if a minute has elapsed, if so then change the Style
-#    if timeCheck != strftime("%I%M"):
-#        timeCheck = strftime("%I%M")
-#        changeStyle()
-
-# if running has been set to false, turn the clock off
-    if not running:
-        return
-
     refreshTime()
-
     canvas.after(5000, clock)
-
 
 # enable changing of Picture Modes
 def changePictureMode():
     global Picturemode
-    # if running has been set to false, keep clock off
-    if not running:
-        return
     Picturemode += 1
     if Picturemode > 3: Picturemode = 0
-    print ("PictureMode: " + str(Picturemode))
-    refreshTime()
 
 # enable changing of styles
 def changeStyle():
     global style
-    
-    # if running has been set to false, keep clock off
-    if not running:
-        return
     style = next(styleCycle)
     refreshTime()
 
 ########################### MENU SYSTEM ###########################
-# TODO: refactor these button actions
-
-#The Mode button decides which mode is enabled
-# BackgroundPics    = Pictures without Numbers overlaid with numbers (e.g. family pics)
-# NumberPics        = Pictures that already contain numbers (e.g. NBA jerseys)
-def pressChangePictureModeButton(button):
-    print ("pressChangePictureModeButton")
+# TODO: extract menu system into a separate package/library?
+def pressButton(button):
     button.configure(bg="grey")
 
-def releaseChangePictureModeButton(button, menu):
-    button.configure(bg="white")
-    changePictureMode()
-#    self.canvas.update_idletasks
-
-def pressChangeStyleButton(button):
-    button.configure(bg="grey")
-
-def releaseChangeStyleButton(button, menu):
+def releaseChangeStyleButton(button, label, menu):
     button.configure(bg="white")
     changeStyle()
-    menu.destroy()
+    menu.itemconfig(label, text="Current Style: " + style)
 
-def pressCloseMenuButton(button):
-    button.configure(bg="grey")
+def releaseChangePictureModeButton(button, label, menu):
+    button.configure(bg="white")
+    changePictureMode()
+    menu.itemconfig(label, text="Current Picture Mode: " + str(Picturemode))
 
 def releaseCloseMenuButton(button, menu):
     button.configure(bg="white")
     menu.destroy()
-
-def pressPowerButton(button):
-    button.configure(bg="grey")
 
 def releasePowerButton(button):
     button.configure(bg="white")
     root.destroy()
 
 def openMenu(event):
-    global h
-    global Picturemode
+    # menu will be another canvas on top of the clockFrame canvas
+    menuCanvas = Canvas(clockFrame, bg="white", width=w, height=600, highlightthickness=0)
+    menuLabel = menuCanvas.create_text(512, 40, fill="black", justify="center", font="Arial 28", text="Menu")
 
-    menu = Canvas(frame, bg="white", width=w, height=600, highlightthickness=0)
+    # style of pictures
+    currentStyleLabel = menuCanvas.create_text(512, 100, fill="black", justify="center", font="Arial 16", text="Current Style: " + style)
+    changeStyleButton = Canvas(menuCanvas, bg="white", width=250, height=30)
+    changeStyleButtonLabel = changeStyleButton.create_text(125, 15, text="Change Style", font=("Arial", 16))
+    changeStyleButton.bind("<ButtonPress-1>", lambda x: pressButton(changeStyleButton))
+    changeStyleButton.bind("<ButtonRelease-1>", lambda x: releaseChangeStyleButton(changeStyleButton, currentStyleLabel, menuCanvas))
 
-    changePictureModeButton = Canvas(menu, bg="white", width=250, height=30)
-    changePictureModeLabel = changePictureModeButton.create_text(125, 15, text="test " + str(Picturemode), font=("Arial", 14))
-    print ("Menuing!")
-    changePictureModeButton.bind("<ButtonPress-1>", lambda x: pressChangePictureModeButton(changePictureModeButton))
-    changePictureModeButton.bind("<ButtonRelease-1>", lambda x: releaseChangePictureModeButton(changePictureModeButton, menu))
+    # picture mode
+    # TODO: will toggle modes such as..
+    # BackgroundPics    = Pictures without Numbers overlaid with numbers (e.g. family pics)
+    # NumberPics        = Pictures that already contain numbers (e.g. NBA jerseys)
+    currentPictureModeLabel = menuCanvas.create_text(512, 250, fill="black", justify="center", font="Arial 16", text="Current Picture Mode: " + str(Picturemode))
+    changePictureModeButton = Canvas(menuCanvas, bg="white", width=250, height=30)
+    changePictureModeButtonLabel = changePictureModeButton.create_text(125, 15, text="Change Picture Mode", font=("Arial", 16))
+    changePictureModeButton.bind("<ButtonPress-1>", lambda x: pressButton(changePictureModeButton))
+    changePictureModeButton.bind("<ButtonRelease-1>", lambda x: releaseChangePictureModeButton(changePictureModeButton, currentPictureModeLabel, menuCanvas))
 
-    changeStyleButton = Canvas(menu, bg="white", width=250, height=30)
-    changeStyleLabel = changeStyleButton.create_text(125, 15, text="Change Style", font=("Arial", 16))
-    changeStyleButton.bind("<ButtonPress-1>", lambda x: pressChangeStyleButton(changeStyleButton))
-    changeStyleButton.bind("<ButtonRelease-1>", lambda x: releaseChangeStyleButton(changeStyleButton, menu))
+    # close menu
+    closeMenuButton = Canvas(menuCanvas, bg="white", width=250, height=30)
+    closeMenuButtonLabel = closeMenuButton.create_text(125, 15, text="Close Menu", font=("Arial", 16))
+    closeMenuButton.bind("<ButtonPress-1>", lambda x: pressButton(closeMenuButton))
+    closeMenuButton.bind("<ButtonRelease-1>", lambda x: releaseCloseMenuButton(closeMenuButton, menuCanvas))
 
-    closeMenuButton = Canvas(menu, bg="white", width=250, height=30)
-    closeMenuLabel = closeMenuButton.create_text(125, 15, text="Close Menu", font=("Arial", 16))
-    closeMenuButton.bind("<ButtonPress-1>", lambda x: pressCloseMenuButton(closeMenuButton))
-    closeMenuButton.bind("<ButtonRelease-1>", lambda x: releaseCloseMenuButton(closeMenuButton, menu))
-
-    powerButton = Canvas(menu, bg="white", width=250, height=30)
-    powerLabel = powerButton.create_text(125, 15, text="Power Off", font=("Arial", 16))
-    powerButton.bind("<ButtonPress-1>", lambda x: pressPowerButton(powerButton))
+    # power
+    powerButton = Canvas(menuCanvas, bg="white", width=250, height=30)
+    powerButtonLabel = powerButton.create_text(125, 15, text="Power Off", font=("Arial", 16))
+    powerButton.bind("<ButtonPress-1>", lambda x: pressButton(powerButton))
     powerButton.bind("<ButtonRelease-1>", lambda x: releasePowerButton(powerButton))
 
-    menu.place(x = 0, y = 0)
-    changeStyleButton.place(x = 512, y = 100, anchor="center")
-    changePictureModeButton.place(x=512, y=150, anchor="center")
-    closeMenuButton.place(x = 512, y = 200, anchor="center")
-    powerButton.place(x = 512, y = 250, anchor="center")
-
-    menu.create_text(512,10, fill="darkblue", justify="center",font="Times 20 italic bold",
-                     text="Click the bubbles that are multiples of two.")
+    # place menu and buttons
+    # TODO: change buttons from Canvases to rectangle objects? might make more sense
+    menuCanvas.place(x = 0, y = 0)
+    changeStyleButton.place(x = 512, y = 150, anchor="center")
+    changePictureModeButton.place(x = 512, y = 300, anchor="center")
+    closeMenuButton.place(x = 512, y = 450, anchor="center")
+    powerButton.place(x = 512, y = 500, anchor="center")
 
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
@@ -287,7 +251,5 @@ clock()
 # Driver code
 get_Host_name_IP() #Function call 
 
-
 # infinite running loop
 root.mainloop() 
-# rotate clock style each minute    
