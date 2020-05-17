@@ -18,15 +18,17 @@ from random import randint
 timeCheck = 0
 seed(1)
 
+
 # creating tkinter window
 root = Tk()
-w = 1024 # width for the Tk root
+w = root.winfo_screenwidth()  # width for the Tk root
 h = 600 # height for the Tk root
 DigitMaxSize = (round(w / 4,0), round(h,0)) #maximum size of a given digit
 
 # get screen width and height
 ws = root.winfo_screenwidth()
 hs = root.winfo_screenheight()
+
 
 # calculate x and y coordinates for the Tk root window
 x = 0
@@ -46,24 +48,36 @@ clockFrame.pack()
 canvas = Canvas(clockFrame, bg="black", width=2048, height=600, highlightthickness=0)
 
 # default image path
-Picturemode = 0 #Picture Types, 0 = Pictures without Numbers, 1 = Pictures with Numbers
+Picturemode = 0 #Picture Types, 0 = Pictures with Numbers, 1 = Pictures without Numbers
 BackgroundPath = "./images/backgrounds"
 NumberPath = "./images/Numbers"
+NumberedPhotosPath = "./images/NumberedPhotos"
 
 # create list of contents in imagepPath: dirnames = directories
 f = []
 for (dirpath, dirnames, filenames) in walk(BackgroundPath):
     f.extend(filenames)
     break    
-# print(dirnames)
+print(dirnames)
+
+f = []
+for (Numbereddirpath, Numbereddirnames, Numberedfilenames) in walk(NumberedPhotosPath):
+    f.extend(Numberedfilenames)
+    break
+print(Numbereddirnames)
 
 styleList = dirnames
-
 # iterator for style list
 styleCycle = cycle(styleList)
-
 # default style to first one
 style = next(styleCycle)
+
+NumberedstyleList = Numbereddirnames
+# iterator for style list
+NumberedstyleCycle = cycle(NumberedstyleList)
+# default style to first one
+Numberedstyle = next(NumberedstyleCycle)
+
 
 # initialize images to default style
 canvas.image0 = ImageTk.PhotoImage(Image.open("./images/Numbers/0.png"))
@@ -98,9 +112,20 @@ def get_Host_name_IP():
         print("Hostname :  ",host_name) 
         print("IP : ",host_ip) 
     except: 
-        print("Unable to get Hostname and IP") 
-  
-# get image corresponding to number
+        print("Unable to get Hostname and IP")
+
+
+# get image corresponding to number - This routine used for photos that already have numbers, e.g. NBA jerseys (Mode 1)
+def getNumberPath(number):
+    switcher = {}
+    for i in range(10):
+        switcher[str(i)] = NumberedPhotosPath + "/" + Numberedstyle + "/" + str(i) + ".jpg"
+        img = Image.open(NumberedPhotosPath + "/" + Numberedstyle + "/" + str(i) + ".jpg")
+
+    return switcher.get(number, "invalid image number")
+
+
+# get image corresponding to number - This routine used to get numbers for photos without numbers, e.g. Family Pics (Mode 0)
 def getNumberImagePath(number):
     switcher = {}
     for i in range(10):
@@ -126,8 +151,22 @@ def getBackgroundImagePath(number):
        
     return switcher.get(number, "invalid image number")
 
+
+def refreshMode0Time():
+    canvas.delete("all")
+    timeString = strftime("%I%M%S")
+
+    xPos = 0
+    for i in range(4):
+        imageList[i] = Image.open(getNumberPath(timeString[i]))
+        imageList[i].thumbnail(DigitMaxSize)
+        imageList[i] = ImageTk.PhotoImage(imageList[i])
+        canvas.create_image(xPos, 0, image=imageList[i], anchor='nw')
+        xPos += round(w/4,0)
+
+
 # clears canvas and refreshes the time and time images
-def refreshTime():
+def refreshMode1Time():
     global img
     global junk
     global w
@@ -159,7 +198,10 @@ def refreshTime():
 # main clock function loop which refreshes every 1 sec
 def clock(): 
     global timeCheck
-    refreshTime()
+    if Picturemode == 0:
+        refreshMode0Time()
+    else:
+        refreshMode1Time()
     canvas.after(5000, clock)
 
 # enable changing of Picture Modes
@@ -172,7 +214,10 @@ def changePictureMode():
 def changeStyle():
     global style
     style = next(styleCycle)
-    refreshTime()
+    if Picturemode == 0:
+        refreshMode0Time()
+    else:
+        refreshMode1Time()
 
 ########################### MENU SYSTEM ###########################
 # TODO: extract menu system into a separate package/library?
