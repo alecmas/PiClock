@@ -213,7 +213,9 @@ def changePictureMode():
 # enable changing of styles
 def changeStyle():
     global style
+    global Numberedstyle
     style = next(styleCycle)
+    Numberedstyle = next(NumberedstyleCycle)
     if Picturemode == 0:
         refreshMode0Time()
     else:
@@ -241,6 +243,12 @@ def releaseCloseMenuButton(button, menu):
 def releasePowerButton(button):
     button.configure(bg="white")
     root.destroy()
+
+def quit_program ():
+    root.destroy()
+
+def close_menu():
+    button1.destroy()
 
 def openMenu(event):
     # menu will be another canvas on top of the clockFrame canvas
@@ -283,6 +291,13 @@ def openMenu(event):
     changePictureModeButton.place(x = 512, y = 300, anchor="center")
     closeMenuButton.place(x = 512, y = 450, anchor="center")
     powerButton.place(x = 512, y = 500, anchor="center")
+
+    button1 = Button(menuCanvas, text = "Quit Program", command = quit_program)
+    button2 = Button(menuCanvas, text="Close Menu", command=close_menu, width=100)
+    button3 = Button(menuCanvas, text="Change Style", command=changeStyle, width=100)
+    button1.pack(fill=BOTH, expand=1)
+    button2.pack(fill=BOTH, expand=1)
+    button3.pack(fill=BOTH, expand=1)
 
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
