@@ -2,7 +2,7 @@ from os import walk
 # import numpy
 import socket
 from tkinter import * 
-from tkinter.ttk import *
+#from tkinter.ttk import *
 from time import strftime 
 from PIL import ImageTk, Image
 from itertools import cycle
@@ -208,7 +208,11 @@ def clock():
 def changePictureMode():
     global Picturemode
     Picturemode += 1
-    if Picturemode > 3: Picturemode = 0
+    if Picturemode > 1: Picturemode = 0
+    if Picturemode == 0:
+        refreshMode0Time()
+    else:
+        refreshMode1Time()
 
 # enable changing of styles
 def changeStyle():
@@ -222,82 +226,40 @@ def changeStyle():
         refreshMode1Time()
 
 ########################### MENU SYSTEM ###########################
-# TODO: extract menu system into a separate package/library?
-def pressButton(button):
-    button.configure(bg="grey")
-
-def releaseChangeStyleButton(button, label, menu):
-    button.configure(bg="white")
-    changeStyle()
-    menu.itemconfig(label, text="Current Style: " + style)
-
-def releaseChangePictureModeButton(button, label, menu):
-    button.configure(bg="white")
-    changePictureMode()
-    menu.itemconfig(label, text="Current Picture Mode: " + str(Picturemode))
-
-def releaseCloseMenuButton(button, menu):
-    button.configure(bg="white")
-    menu.destroy()
-
-def releasePowerButton(button):
-    button.configure(bg="white")
-    root.destroy()
 
 def quit_program ():
     root.destroy()
 
 def close_menu():
-    button1.destroy()
+    menu.destroy()
 
 def openMenu(event):
     # menu will be another canvas on top of the clockFrame canvas
     menuCanvas = Canvas(clockFrame, bg="white", width=w, height=600, highlightthickness=0)
-    menuLabel = menuCanvas.create_text(512, 40, fill="black", justify="center", font="Arial 28", text="Menu")
+    # menuLabel = menuCanvas.create_text(512, 40, fill="black", justify="center", font="Arial 28", text="Menu")
 
-    # style of pictures
-    currentStyleLabel = menuCanvas.create_text(512, 100, fill="black", justify="center", font="Arial 16", text="Current Style: " + style)
-    changeStyleButton = Canvas(menuCanvas, bg="white", width=250, height=30)
-    changeStyleButtonLabel = changeStyleButton.create_text(125, 15, text="Change Style", font=("Arial", 16))
-    changeStyleButton.bind("<ButtonPress-1>", lambda x: pressButton(changeStyleButton))
-    changeStyleButton.bind("<ButtonRelease-1>", lambda x: releaseChangeStyleButton(changeStyleButton, currentStyleLabel, menuCanvas))
 
     # picture mode
     # TODO: will toggle modes such as..
     # BackgroundPics    = Pictures without Numbers overlaid with numbers (e.g. family pics)
     # NumberPics        = Pictures that already contain numbers (e.g. NBA jerseys)
-    currentPictureModeLabel = menuCanvas.create_text(512, 250, fill="black", justify="center", font="Arial 16", text="Current Picture Mode: " + str(Picturemode))
-    changePictureModeButton = Canvas(menuCanvas, bg="white", width=250, height=30)
-    changePictureModeButtonLabel = changePictureModeButton.create_text(125, 15, text="Change Picture Mode", font=("Arial", 16))
-    changePictureModeButton.bind("<ButtonPress-1>", lambda x: pressButton(changePictureModeButton))
-    changePictureModeButton.bind("<ButtonRelease-1>", lambda x: releaseChangePictureModeButton(changePictureModeButton, currentPictureModeLabel, menuCanvas))
-
-    # close menu
-    closeMenuButton = Canvas(menuCanvas, bg="white", width=250, height=30)
-    closeMenuButtonLabel = closeMenuButton.create_text(125, 15, text="Close Menu", font=("Arial", 16))
-    closeMenuButton.bind("<ButtonPress-1>", lambda x: pressButton(closeMenuButton))
-    closeMenuButton.bind("<ButtonRelease-1>", lambda x: releaseCloseMenuButton(closeMenuButton, menuCanvas))
-
-    # power
-    powerButton = Canvas(menuCanvas, bg="white", width=250, height=30)
-    powerButtonLabel = powerButton.create_text(125, 15, text="Power Off", font=("Arial", 16))
-    powerButton.bind("<ButtonPress-1>", lambda x: pressButton(powerButton))
-    powerButton.bind("<ButtonRelease-1>", lambda x: releasePowerButton(powerButton))
 
     # place menu and buttons
     # TODO: change buttons from Canvases to rectangle objects? might make more sense
     menuCanvas.place(x = 0, y = 0)
-    changeStyleButton.place(x = 512, y = 150, anchor="center")
-    changePictureModeButton.place(x = 512, y = 300, anchor="center")
-    closeMenuButton.place(x = 512, y = 450, anchor="center")
-    powerButton.place(x = 512, y = 500, anchor="center")
 
-    button1 = Button(menuCanvas, text = "Quit Program", command = quit_program)
-    button2 = Button(menuCanvas, text="Close Menu", command=close_menu, width=100)
-    button3 = Button(menuCanvas, text="Change Style", command=changeStyle, width=100)
-    button1.pack(fill=BOTH, expand=1)
-    button2.pack(fill=BOTH, expand=1)
-    button3.pack(fill=BOTH, expand=1)
+    button1 = Button(menuCanvas, text = "Quit Program", command = quit_program, height=5, width=100)
+    button2 = Button(menuCanvas, text="Close Menu", command=close_menu, height=5, width=100)
+    button3 = Button(menuCanvas, text="Change Photo Style", command=changeStyle, height=5, width=100)
+    button4 = Button(menuCanvas, text="Change Photo Mode", command=changePictureMode,height=5,  width=100)
+    button1.grid(row=1, column=1)
+    button2.grid(row=2, column=1)
+    button3.grid(row=3, column=1)
+    button4.grid(row=4, column=1)
+#    button1.pack(fill=BOTH, expand=1)
+#    button2.pack(fill=BOTH, expand=1)
+#    button3.pack(fill=BOTH, expand=1)
+#    button4.pack(fill=BOTH, expand=1)
 
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
