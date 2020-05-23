@@ -185,7 +185,7 @@ def refreshmode1time():
         bwidth, bheight = BackgroundImage.size
         # print(BackgroundImage.size)
         # Get the dimensions of the foreground image (the digit)
-        imageList[i] = (Image.open(getNumberimagepath(timeString[i])))
+        imageList[i] = (Image.open(getnumberimagepath(timeString[i])))
         imwidth, imheight = imageList[i].size
         # Paste the foreground onto the BackgroundImageList
         BackgroundImage.paste(imageList[i], (int(bwidth / 2 - imwidth / 2), bheight - imheight - 10), imageList[i])
@@ -236,7 +236,10 @@ def quit_program():
 
 
 def close_menu():
-    openMenu.destroy()
+    list = root.slaves()
+    print ("list: ",list)
+    for l in list:
+        l.destroy()
 
 
 def openMenu(event):
@@ -281,4 +284,7 @@ clock()
 get_host_name_ip()  # Function call
 
 # infinite running loop
-root.mainloop()
+# root.mainloop()
+while True:
+    root.update_idletasks()
+    root.update()
