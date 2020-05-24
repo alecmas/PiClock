@@ -44,6 +44,7 @@ clockFrame.pack()
 
 # create a canvas
 canvas = Canvas(clockFrame, bg="black", width=2048, height=600, highlightthickness=0)
+menuCanvas = Canvas(clockFrame, bg="white", width=w, height=int(1200), highlightthickness=0)
 
 # default image path
 Picturemode = 0  # Picture Types, 0 = Pictures with Numbers, 1 = Pictures without Numbers
@@ -236,15 +237,26 @@ def quit_program():
 
 
 def close_menu():
-    list = root.slaves()
-    print ("list: ",list)
-    for l in list:
-        l.destroy()
+     global menuCanvas
+#    list = root.slaves()
+#    print ("list: ",list)
+#    print("Canvas: ",canvas.gettags(item))
+#    print("findall: ",canvas.find_all())
+     print("findall: ",menuCanvas.find_all())
+     menuCanvas.grid_remove()
+     menuCanvas.update_idletasks()
+     menuCanvas.update()
+
+#    menuCanvas.pack_forget()
+
+#    for l in list:
+#        l.destroy()
 
 
 def openMenu(event):
+    global menuCanvas
     # menu will be another canvas on top of the clockFrame canvas
-    menuCanvas = Canvas(clockFrame, bg="white", width=w, height=int(1200), highlightthickness=0)
+#    menuCanvas = Canvas(clockFrame, bg="white", width=w, height=int(1200), highlightthickness=0)
     # menuLabel = menuCanvas.create_text(512, 40, fill="black", justify="center", font="Arial 28", text="Menu")
 
     # picture mode
@@ -264,13 +276,10 @@ def openMenu(event):
     button2.grid(row=2, column=1)
     button3.grid(row=3, column=1)
     button4.grid(row=4, column=1)
-
-
-#    button1.pack(fill=BOTH, expand=1)
-#    button2.pack(fill=BOTH, expand=1)
-#    button3.pack(fill=BOTH, expand=1)
-#    button4.pack(fill=BOTH, expand=1)
-
+#    button1.pack(side="top")
+#    button2.pack(side="top")
+#    button3.pack(side="top")
+#    button4.pack(side="top")
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
 ########################### END MENU SYSTEM ###########################
