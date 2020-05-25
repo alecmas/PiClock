@@ -288,7 +288,7 @@ clock()
 get_host_name_ip()  # Function call
 
 # infinite running loop
-# root.mainloop()
-while True:
-    root.update_idletasks()
-    root.update()
+root.mainloop()
+#while True:
+#    root.update_idletasks()
+#    root.update()
