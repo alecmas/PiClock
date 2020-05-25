@@ -44,7 +44,7 @@ clockFrame.pack()
 
 # create a canvas
 canvas = Canvas(clockFrame, bg="black", width=2048, height=600, highlightthickness=0)
-menuCanvas = Canvas(clockFrame, bg="white", width=w, height=int(1200), highlightthickness=0)
+
 
 # default image path
 Picturemode = 0  # Picture Types, 0 = Pictures with Numbers, 1 = Pictures without Numbers
@@ -234,29 +234,23 @@ def changeStyle():
 
 def quit_program():
     root.destroy()
+    sys.exit()
 
-
-def close_menu():
-     global menuCanvas
-#    list = root.slaves()
-#    print ("list: ",list)
-#    print("Canvas: ",canvas.gettags(item))
-#    print("findall: ",canvas.find_all())
-     print("findall: ",menuCanvas.find_all())
-     menuCanvas.grid_remove()
-     menuCanvas.update_idletasks()
-     menuCanvas.update()
-
-#    menuCanvas.pack_forget()
+def close_menu(foo):
+#     list = root.slaves()
+#     print ("list: ",list)
+#     print("Canvas: ",canvas.gettags(item))
+#     print("canvas findall: ",canvas.find_all())
+#     print("menuCanvas findall: ", menuCanvas.find_all())
+     foo.destroy()
 
 #    for l in list:
 #        l.destroy()
 
 
 def openMenu(event):
-    global menuCanvas
     # menu will be another canvas on top of the clockFrame canvas
-#    menuCanvas = Canvas(clockFrame, bg="white", width=w, height=int(1200), highlightthickness=0)
+    menuCanvas = Canvas(clockFrame, bg="white", width=w, height=int(1200), highlightthickness=0)
     # menuLabel = menuCanvas.create_text(512, 40, fill="black", justify="center", font="Arial 28", text="Menu")
 
     # picture mode
@@ -266,10 +260,11 @@ def openMenu(event):
 
     # place menu and buttons
     # TODO: change buttons from Canvases to rectangle objects? might make more sense
+#    menuCanvas.grid(x=0, y=0)
     menuCanvas.place(x=0, y=0)
 
     button1 = Button(menuCanvas, text="Quit Program", command=quit_program, height=5, width=100)
-    button2 = Button(menuCanvas, text="Close Menu", command=close_menu, height=5, width=100)
+    button2 = Button(menuCanvas, text="Close Menu", command=lambda: close_menu(menuCanvas), height=5, width=100)
     button3 = Button(menuCanvas, text="Change Photo Style", command=changeStyle, height=5, width=100)
     button4 = Button(menuCanvas, text="Change Photo Mode", command=changepicturemode, height=5, width=100)
     button1.grid(row=1, column=1)
@@ -279,7 +274,7 @@ def openMenu(event):
 #    button1.pack(side="top")
 #    button2.pack(side="top")
 #    button3.pack(side="top")
-#    button4.pack(side="top")
+#   button4.pack(side="top")
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
 ########################### END MENU SYSTEM ###########################
