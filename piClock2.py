@@ -1,8 +1,6 @@
 from os import walk
-# import numpy
 import socket
 from tkinter import *
-# from tkinter.ttk import *
 from time import strftime
 from PIL import ImageTk, Image
 from itertools import cycle
@@ -11,8 +9,7 @@ from random import seed
 from random import randint
 
 # INSTRUCTIONS:
-# press/click once to change style
-# press/hold for 5 seconds to exit clock
+# press/click to open menu
 
 # Create any needed global variables
 timeCheck = 0
@@ -22,20 +19,19 @@ seed(1)
 root = Tk()
 
 # get screen width and height
-ws = root.winfo_screenwidth()
-hs = root.winfo_screenheight()
+screenWidth = root.winfo_screenwidth()
+screenHeight = root.winfo_screenheight()
 
-w = ws  # width for the Tk root
-h = hs  # height for the Tk root
-DigitMaxSize = (round(w / 4, 0), round(h, 0))  # maximum size of a given digit
-
+w = screenWidth  # width for the Tk root
+h = screenHeight  # height for the Tk root
+DigitMaxSize = (round(screenWidth / 4, 0), round(screenHeight, 0))  # maximum size of a given digit
 
 # calculate x and y coordinates for the Tk root window
 x = 0
 y = 0
 
 # set the dimensions of the screen and where it is placed
-root.geometry('%dx%d+%d+%d' % (w, h, x, y))
+root.geometry('%dx%d+%d+%d' % (screenWidth, screenHeight, x, y))
 
 # for removing borders on window
 root.overrideredirect(True)
@@ -45,8 +41,7 @@ clockFrame = Frame(root)
 clockFrame.pack()
 
 # create a canvas
-canvas = Canvas(clockFrame, bg="black", width=w, height=h, highlightthickness=0)
-
+canvas = Canvas(clockFrame, bg="black", width=screenWidth, height=screenHeight, highlightthickness=0)
 
 # default image path
 Picturemode = 0  # Picture Types, 0 = Pictures with Numbers, 1 = Pictures without Numbers
@@ -112,7 +107,7 @@ def get_host_name_ip():
         host_ip = socket.gethostbyname(host_name)
         print("Hostname :  ", host_name)
         print("IP : ", host_ip)
-        print("Screen Size: ", ws, ",", hs)
+        print("Screen Size: ", screenWidth, ",", screenHeight)
     except:
         print("Unable to get Hostname and IP")
 
@@ -165,14 +160,13 @@ def refreshmode0time():
         imageList[i].thumbnail(DigitMaxSize)
         imageList[i] = ImageTk.PhotoImage(imageList[i])
         canvas.create_image(xPos, 0, image=imageList[i], anchor='nw')
-        xPos += round(w / 4, 0)
+        xPos += round(screenWidth / 4, 0)
 
 
 # clears canvas and refreshes the time and time images
 def refreshmode1time():
     global img
     global junk
-    global w
 
     canvas.delete("all")
     timeString = strftime("%I%M%S")
@@ -194,8 +188,8 @@ def refreshmode1time():
         BackgroundImage.paste(imageList[i], (int(bwidth / 2 - imwidth / 2), bheight - imheight - 10), imageList[i])
         junk[i] = ImageTk.PhotoImage(BackgroundImage)
         # canvas.create_image(xPos, 0, image=junk, anchor='nw')
-        canvas.create_image(xPos, h, image=junk[i], anchor='sw')
-        xPos += round(w / 4, 0)
+        canvas.create_image(xPos, screenHeight, image=junk[i], anchor='sw')
+        xPos += round(screenWidth / 4, 0)
         # print ("xPos:",xPos)
 
 
@@ -252,7 +246,7 @@ def close_menu(foo):
 
 def openMenu(event):
     # menu will be another canvas on top of the clockFrame canvas
-    menuCanvas = Canvas(clockFrame, bg="white", width=w, height=int(1200), highlightthickness=0)
+    menuCanvas = Canvas(clockFrame, bg="white", width=screenWidth, height=int(1200), highlightthickness=0)
     # menuLabel = menuCanvas.create_text(512, 40, fill="black", justify="center", font="Arial 28", text="Menu")
 
     # picture mode
@@ -271,7 +265,7 @@ def openMenu(event):
     button4 = Button(menuCanvas, text="Change Photo Mode", command=changepicturemode, height=5, width=100)
     button5 = Button(menuCanvas, text="Screen Size: ", height=5, width=100)
     button6 = Button(menuCanvas, text="Max Character Size: ", height=5, width=100)
-    button15 = Button(menuCanvas, text=str(ws)+", "+str(hs), height=5, width = 100)
+    button15 = Button(menuCanvas, text=str(screenWidth)+", "+str(screenHeight), height=5, width = 100)
     button16 = Button(menuCanvas, text=DigitMaxSize, height=5, width=100)
     button1.grid(row=1, column=1)
     button2.grid(row=2, column=1)
