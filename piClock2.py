@@ -20,13 +20,15 @@ seed(1)
 
 # creating tkinter window
 root = Tk()
-w = root.winfo_screenwidth()  # width for the Tk root
-h = 600  # height for the Tk root
-DigitMaxSize = (round(w / 4, 0), round(h, 0))  # maximum size of a given digit
 
 # get screen width and height
 ws = root.winfo_screenwidth()
 hs = root.winfo_screenheight()
+
+w = ws  # width for the Tk root
+h = hs  # height for the Tk root
+DigitMaxSize = (round(w / 4, 0), round(h, 0))  # maximum size of a given digit
+
 
 # calculate x and y coordinates for the Tk root window
 x = 0
@@ -43,7 +45,7 @@ clockFrame = Frame(root)
 clockFrame.pack()
 
 # create a canvas
-canvas = Canvas(clockFrame, bg="black", width=2048, height=600, highlightthickness=0)
+canvas = Canvas(clockFrame, bg="black", width=w, height=h, highlightthickness=0)
 
 
 # default image path
@@ -192,7 +194,7 @@ def refreshmode1time():
         BackgroundImage.paste(imageList[i], (int(bwidth / 2 - imwidth / 2), bheight - imheight - 10), imageList[i])
         junk[i] = ImageTk.PhotoImage(BackgroundImage)
         # canvas.create_image(xPos, 0, image=junk, anchor='nw')
-        canvas.create_image(xPos, 600, image=junk[i], anchor='sw')
+        canvas.create_image(xPos, h, image=junk[i], anchor='sw')
         xPos += round(w / 4, 0)
         # print ("xPos:",xPos)
 
@@ -267,10 +269,18 @@ def openMenu(event):
     button2 = Button(menuCanvas, text="Close Menu", command=lambda: close_menu(menuCanvas), height=5, width=100)
     button3 = Button(menuCanvas, text="Change Photo Style", command=changeStyle, height=5, width=100)
     button4 = Button(menuCanvas, text="Change Photo Mode", command=changepicturemode, height=5, width=100)
+    button5 = Button(menuCanvas, text="Screen Size: ", height=5, width=100)
+    button6 = Button(menuCanvas, text="Max Character Size: ", height=5, width=100)
+    button15 = Button(menuCanvas, text=str(ws)+", "+str(hs), height=5, width = 100)
+    button16 = Button(menuCanvas, text=DigitMaxSize, height=5, width=100)
     button1.grid(row=1, column=1)
     button2.grid(row=2, column=1)
     button3.grid(row=3, column=1)
     button4.grid(row=4, column=1)
+    button5.grid(row=5, column=1)
+    button6.grid(row=6, column=1)
+    button15.grid(row=5, column=2)
+    button16.grid(row=6, column=2)
 #    button1.pack(side="top")
 #    button2.pack(side="top")
 #    button3.pack(side="top")
