@@ -252,8 +252,12 @@ def close_menu(foo):
 
 def openMenu(event):
     # menu will be another canvas on top of the clockFrame canvas
-    menuCanvas = Canvas(clockFrame, bg="white", width=w, height=int(1200), highlightthickness=0)
-    # menuLabel = menuCanvas.create_text(512, 40, fill="black", justify="center", font="Arial 28", text="Menu")
+#    menuCanvas = Canvas(clockFrame, bg="white", width=w, height=int(1200), highlightthickness=0)
+    menuCanvas = Tk()
+    menuCanvas.title('Test Title')
+    menuCanvas.geometry(str(int(ws/2))+"x"+str(int(hs/2))+"+0+0")
+
+#    menuLabel = menuCanvas.create_text(512, 40, fill="black", justify="center", font="Arial 28", text="Menu")
 
     # picture mode
     # TODO: will toggle modes such as..
@@ -262,29 +266,35 @@ def openMenu(event):
 
     # place menu and buttons
     # TODO: change buttons from Canvases to rectangle objects? might make more sense
-#    menuCanvas.grid(x=0, y=0)
-    menuCanvas.place(x=0, y=0)
+ #   menuCanvas.grid(x=0, y=0)
+#    menuCanvas.place(x=0, y=0, width=ws/2, height=hs/2)
+    Grid.rowconfigure(menuCanvas, 0, weight=1)
+    Grid.rowconfigure(menuCanvas, 1, weight=1)
+    Grid.rowconfigure(menuCanvas, 2, weight=1)
+    Grid.rowconfigure(menuCanvas, 3, weight=1)
+    Grid.columnconfigure(menuCanvas, 0, weight=1)
+    Grid.columnconfigure(menuCanvas, 1, weight=1)
 
-    button1 = Button(menuCanvas, text="Quit Program", command=quit_program, height=5, width=100)
-    button2 = Button(menuCanvas, text="Close Menu", command=lambda: close_menu(menuCanvas), height=5, width=100)
-    button3 = Button(menuCanvas, text="Change Photo Style", command=changeStyle, height=5, width=100)
-    button4 = Button(menuCanvas, text="Change Photo Mode", command=changepicturemode, height=5, width=100)
-    button5 = Button(menuCanvas, text="Screen Size: ", height=5, width=100)
-    button6 = Button(menuCanvas, text="Max Character Size: ", height=5, width=100)
-    button15 = Button(menuCanvas, text=str(ws)+", "+str(hs), height=5, width = 100)
-    button16 = Button(menuCanvas, text=DigitMaxSize, height=5, width=100)
-    button1.grid(row=1, column=1)
-    button2.grid(row=2, column=1)
-    button3.grid(row=3, column=1)
-    button4.grid(row=4, column=1)
-    button5.grid(row=5, column=1)
-    button6.grid(row=6, column=1)
-    button15.grid(row=5, column=2)
-    button16.grid(row=6, column=2)
-#    button1.pack(side="top")
-#    button2.pack(side="top")
-#    button3.pack(side="top")
-#   button4.pack(side="top")
+    button1 = Button(menuCanvas, text="Quit Program", command=quit_program)
+    button2 = Button(menuCanvas, text="Close Menu", command=lambda: close_menu(menuCanvas))
+    button3 = Button(menuCanvas, text="Change Photo Style", command=changeStyle)
+    button4 = Button(menuCanvas, text="Change Photo Mode", command=changepicturemode)
+    button5 = Button(menuCanvas, text="Screen Size: ")
+    button6 = Button(menuCanvas, text="Max Character Size: ")
+    button15 = Button(menuCanvas, text=str(ws)+", "+str(hs))
+    button16 = Button(menuCanvas, text=DigitMaxSize)
+    button1.grid(row=0, column=0, sticky="NSEW")
+    button2.grid(row=1, column=0, sticky="NSEW")
+    button3.grid(row=0, column=1, sticky="NSEW")
+    button4.grid(row=1, column=1, sticky="NSEW")
+    button5.grid(row=2, column=0, sticky="NSEW")
+    button6.grid(row=3, column=0, sticky="NSEW")
+    button15.grid(row=2, column=1, sticky="NSEW")
+    button16.grid(row=3, column=1, sticky="NSEW")
+#    button1.pack(side="top", fill=X)
+#    button2.pack(side="top", fill=X)
+#    button3.pack(side="top", fill=X)
+#    button4.pack(side="top", fill=X)
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
 ########################### END MENU SYSTEM ###########################
