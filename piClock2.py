@@ -105,7 +105,7 @@ junk = [canvas.image0,
 
 
 # Function to display hostname and
-# IP address 
+# IP address
 def get_host_name_ip():
     try:
         host_name = socket.gethostname()
@@ -219,18 +219,18 @@ def changepicturemode():
     else:
         refreshmode1time()
 
-
 # enable changing of styles
 def changeStyle():
     global style
     global Numberedstyle
     style = next(styleCycle)
     Numberedstyle = next(NumberedstyleCycle)
+
     if Picturemode == 0:
         refreshmode0time()
     else:
         refreshmode1time()
-
+    openMenu
 
 ########################### MENU SYSTEM ###########################
 
@@ -271,26 +271,21 @@ def openMenu(event):
     Grid.rowconfigure(menuCanvas, 0, weight=1)
     Grid.rowconfigure(menuCanvas, 1, weight=1)
     Grid.rowconfigure(menuCanvas, 2, weight=1)
-    Grid.rowconfigure(menuCanvas, 3, weight=1)
     Grid.columnconfigure(menuCanvas, 0, weight=1)
     Grid.columnconfigure(menuCanvas, 1, weight=1)
 
     button1 = Button(menuCanvas, text="Quit Program", command=quit_program)
     button2 = Button(menuCanvas, text="Close Menu", command=lambda: close_menu(menuCanvas))
-    button3 = Button(menuCanvas, text="Change Photo Style", command=changeStyle)
-    button4 = Button(menuCanvas, text="Change Photo Mode", command=changepicturemode)
-    button5 = Button(menuCanvas, text="Screen Size: ")
-    button6 = Button(menuCanvas, text="Max Character Size: ")
-    button15 = Button(menuCanvas, text=str(ws)+", "+str(hs))
-    button16 = Button(menuCanvas, text=DigitMaxSize)
+    button3 = Button(menuCanvas, text="Change Style: "+Numberedstyle, command=changeStyle)
+    button4 = Button(menuCanvas, text="Change Photo Mode " + str(int(Picturemode)), command=changepicturemode)
+    button5 = Button(menuCanvas, text="Screen Size: "+str(ws)+","+str(hs))
+    button6 = Button(menuCanvas, text="Max Digit: "+str(int(DigitMaxSize[0]))+","+str(int(DigitMaxSize[1])))
     button1.grid(row=0, column=0, sticky="NSEW")
-    button2.grid(row=1, column=0, sticky="NSEW")
-    button3.grid(row=0, column=1, sticky="NSEW")
+    button2.grid(row=0, column=1, sticky="NSEW")
+    button3.grid(row=1, column=0, sticky="NSEW")
     button4.grid(row=1, column=1, sticky="NSEW")
     button5.grid(row=2, column=0, sticky="NSEW")
-    button6.grid(row=3, column=0, sticky="NSEW")
-    button15.grid(row=2, column=1, sticky="NSEW")
-    button16.grid(row=3, column=1, sticky="NSEW")
+    button6.grid(row=2, column=1, sticky="NSEW")
 #    button1.pack(side="top", fill=X)
 #    button2.pack(side="top", fill=X)
 #    button3.pack(side="top", fill=X)
