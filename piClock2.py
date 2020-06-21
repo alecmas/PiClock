@@ -44,7 +44,7 @@ root.geometry('%dx%d+%d+%d' % (screenWidth, screenHeight, xWindowPos, yWindowPos
 root.overrideredirect(True)
 
 # create a canvas
-canvas = Canvas(root, bg="black", width=screenWidth, height=screenHeight, highlightthickness=0)
+canvas = Canvas(root, bg="white")
 canvas.grid(row=0, column=0, sticky="NESW")
 Grid.rowconfigure(canvas, 0, weight=1)
 Grid.columnconfigure(canvas, 0, weight=1)
@@ -226,27 +226,24 @@ def closeMenu(menuCanvas):
      menuCanvas.destroy()
      
 def openMenu(event):
-    menuCanvas = Canvas(canvas, bg="white", width=screenWidth, height=screenHeight)
+    menuCanvas = Canvas(canvas, bg="white")
     menuCanvas.grid(row=0, column=0, sticky="NESW")
     
-    for row_index in range(6):
+    for row_index in range(4):
         Grid.rowconfigure(menuCanvas, row_index, weight=1)
-        for col_index in range(1):
+        for col_index in range(2):
             Grid.columnconfigure(menuCanvas, col_index, weight=1)
     
     button0 = Button(menuCanvas, text="Quit Program", command=quitProgram)
     button1 = Button(menuCanvas, text="Close Menu", command=lambda: closeMenu(menuCanvas))
-    button4 = Button(menuCanvas, text="Screen Size: " +  str(screenWidth) + " x " + str(screenHeight))
-    button5 = Button(menuCanvas, text="Max Character Size: " + str(digitMaxSize))
+    button2 = Button(menuCanvas, text="Change Photo Style: " + style, command=lambda: changeStyle(button2))
+    button3 = Button(menuCanvas, text="Change Photo Mode: " + str(pictureMode), command=lambda: changePictureMode(button3))
+    
     button0.grid(row=0, column=0, sticky="NESW")
     button1.grid(row=1, column=0, sticky="NESW")
-    button3 = Button(menuCanvas, text="Change Photo Mode: " + str(pictureMode), command=lambda: changePictureMode(button3))
-    button3.grid(row=3, column=0, sticky="NESW")
-    button4.grid(row=4, column=0, sticky="NESW")
-    button5.grid(row=5, column=0, sticky="NESW")
-    button2 = Button(menuCanvas, text="Change Photo Style: " + style, command=lambda: changeStyle(button2))
-    button2.grid(row=2, column=0, sticky="NESW")
-
+    button2.grid(row=0, column=1, sticky="NESW")
+    button3.grid(row=1, column=1, sticky="NESW")
+    
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
 
@@ -255,12 +252,16 @@ clock()
 
 # Driver code
 if (debugMode == "on"):
-    print("Screen Size: ", screenWidth, ",", screenHeight)
+    print("Screen Size: " + str(screenWidth) + " x " + str(screenHeight))
+    
+    (digitMaxWidth, digitMaxHeight) = digitMaxSize
+    print("Digit Size: " + str(digitMaxWidth) + " x " + str(digitMaxHeight))
+        
     try:
         hostName = socket.gethostname()
         hostIP = socket.gethostbyname(hostName)
-        print("Hostname :  ", hostName)
-        print("IP : ", hostIP)
+        print("Hostname:  ", hostName)
+        print("IP: ", hostIP)
     except:
         print("Unable to get Hostname and IP")
 
