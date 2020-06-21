@@ -21,6 +21,8 @@ seed(1)
 
 # create tkinter window
 root = Tk()
+Grid.rowconfigure(root, 0, weight=1)
+Grid.columnconfigure(root, 0, weight=1)
 
 # initialize window dimensions and position variables
 screenWidth = root.winfo_screenwidth()
@@ -41,12 +43,11 @@ root.geometry('%dx%d+%d+%d' % (screenWidth, screenHeight, xWindowPos, yWindowPos
 # remove borders on window
 root.overrideredirect(True)
 
-# create frame within root window to hold clock images
-clockFrame = Frame(root)
-clockFrame.pack()
-
 # create a canvas
-canvas = Canvas(clockFrame, bg="black", width=screenWidth, height=screenHeight, highlightthickness=0)
+canvas = Canvas(root, bg="black", width=screenWidth, height=screenHeight, highlightthickness=0)
+canvas.grid(row=0, column=0, sticky="NESW")
+Grid.rowconfigure(canvas, 0, weight=1)
+Grid.columnconfigure(canvas, 0, weight=1)
 
 # default image paths
 backgroundPath = "./images/backgrounds"
@@ -193,7 +194,7 @@ def clock():
 
 
 # enable changing of Picture Modes
-def changePictureMode():
+def changePictureMode(button):
     global pictureMode
     pictureMode += 1
     if pictureMode > 1: pictureMode = 0
@@ -201,10 +202,11 @@ def changePictureMode():
         refreshMode0Time()
     else:
         refreshMode1Time()
-
+    
+    button.config(text="Change Photo Mode: " + str(pictureMode))
 
 # enable changing of styles
-def changeStyle():
+def changeStyle(button):
     global style
     global numberedStyle
     style = next(styleCycle)
@@ -213,6 +215,8 @@ def changeStyle():
         refreshMode0Time()
     else:
         refreshMode1Time()
+        
+    button.config(text="Change Photo Style: " + style)
 
 def quitProgram():
     root.destroy()
@@ -220,35 +224,31 @@ def quitProgram():
 
 def closeMenu(menuCanvas):
      menuCanvas.destroy()
-
+     
 def openMenu(event):
-    # menu will be another canvas on top of the clockFrame canvas
-    menuCanvas = Canvas(clockFrame, bg="white", width=screenWidth, height=screenHeight, highlightthickness=0)
-
-    # place menu and buttons
-    menuCanvas.place(x=0, y=0)
+    menuCanvas = Canvas(canvas, bg="white", width=screenWidth, height=screenHeight)
+    menuCanvas.grid(row=0, column=0, sticky="NESW")
     
-    button1 = Button(menuCanvas, text="Quit Program", command=quitProgram, height=5, width=100)
-    button2 = Button(menuCanvas, text="Close Menu", command=lambda: closeMenu(menuCanvas), height=5, width=100)
-    button3 = Button(menuCanvas, text="Change Photo Style", command=changeStyle, height=5, width=100)
-    button4 = Button(menuCanvas, text="Change Photo Mode", command=changePictureMode, height=5, width=100)
-    button5 = Button(menuCanvas, text="Screen Size: ", height=5, width=100)
-    button6 = Button(menuCanvas, text="Max Character Size: ", height=5, width=100)
-    button15 = Button(menuCanvas, text=str(screenWidth)+", "+str(screenHeight), height=5, width=100)
-    button16 = Button(menuCanvas, text=digitMaxSize, height=5, width=100)
-    button1.grid(row=1, column=1)
-    button2.grid(row=2, column=1)
-    button3.grid(row=3, column=1)
-    button4.grid(row=4, column=1)
-    button5.grid(row=5, column=1)
-    button6.grid(row=6, column=1)
-    button15.grid(row=5, column=2)
-    button16.grid(row=6, column=2)
+    for row_index in range(6):
+        Grid.rowconfigure(menuCanvas, row_index, weight=1)
+        for col_index in range(1):
+            Grid.columnconfigure(menuCanvas, col_index, weight=1)
+    
+    button0 = Button(menuCanvas, text="Quit Program", command=quitProgram)
+    button1 = Button(menuCanvas, text="Close Menu", command=lambda: closeMenu(menuCanvas))
+    button4 = Button(menuCanvas, text="Screen Size: " +  str(screenWidth) + " x " + str(screenHeight))
+    button5 = Button(menuCanvas, text="Max Character Size: " + str(digitMaxSize))
+    button0.grid(row=0, column=0, sticky="NESW")
+    button1.grid(row=1, column=0, sticky="NESW")
+    button3 = Button(menuCanvas, text="Change Photo Mode: " + str(pictureMode), command=lambda: changePictureMode(button3))
+    button3.grid(row=3, column=0, sticky="NESW")
+    button4.grid(row=4, column=0, sticky="NESW")
+    button5.grid(row=5, column=0, sticky="NESW")
+    button2 = Button(menuCanvas, text="Change Photo Style: " + style, command=lambda: changeStyle(button2))
+    button2.grid(row=2, column=0, sticky="NESW")
 
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
-
-canvas.pack(side=BOTTOM)
 
 # run time function
 clock()
