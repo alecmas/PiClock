@@ -12,10 +12,9 @@ from random import randint
 # press/click to open menu
 
 # set to "on" to enable logging
-debugMode = "on"
+debugMode = "off"
 
 # Create any needed global variables
-timeCheck = 0
 pictureMode = 0  # Picture Types, 0 = Pictures with Numbers, 1 = Pictures without Numbers
 seed(1)
 
@@ -54,20 +53,21 @@ backgroundPath = "./images/backgrounds"
 numberPath = "./images/numbers"
 numberedPhotosPath = "./images/numberedPhotos"
 
-# create list of contents in imagePath: dirnames = directories
+# backgrounds for layered mode
 f = []
 for (dirPath, dirNames, fileNames) in walk(backgroundPath):
     f.extend(fileNames)
     break
 if (debugMode == "on"):
-    print(dirNames)
+    print("Layered backgrounds: " + str(dirNames))
 
+# styles for simple mode
 f = []
 for (numberedDirPath, numberedDirNames, numberedFileNames) in walk(numberedPhotosPath):
     f.extend(numberedFileNames)
     break
 if (debugMode == "on"):
-    print(numberedDirNames)
+    print("Simple styles: " + str(numberedDirNames))
 
 styleList = dirNames
 # iterator for style list
@@ -185,7 +185,6 @@ def refreshMode1Time():
 
 # main clock function loop which refreshes every 1 sec
 def clock():
-    global timeCheck
     if pictureMode == 0:
         refreshMode0Time()
     else:
@@ -194,29 +193,35 @@ def clock():
 
 
 # enable changing of Picture Modes
-def changePictureMode(button):
+def changePictureMode(changeStyleButton, changeModeButton):
     global pictureMode
-    pictureMode += 1
-    if pictureMode > 1: pictureMode = 0
-    if pictureMode == 0:
-        refreshMode0Time()
-    else:
-        refreshMode1Time()
     
-    button.config(text="Change Photo Mode: " + str(pictureMode))
+    if pictureMode == 0:
+        pictureMode = 1
+        refreshMode1Time()
+        changeStyleButton.config(text="Change Photo Style: " + style)
+    else:
+        pictureMode = 0
+        refreshMode0Time()
+        changeStyleButton.config(text="Change Photo Style: " + numberedStyle)
+        
+    changeModeButton.config(text="Change Photo Mode: " + str(pictureMode))
 
 # enable changing of styles
 def changeStyle(button):
     global style
     global numberedStyle
+    
     style = next(styleCycle)
     numberedStyle = next(numberedStyleCycle)
+    
     if pictureMode == 0:
         refreshMode0Time()
+        button.config(text="Change Photo Style: " + numberedStyle)
     else:
         refreshMode1Time()
+        button.config(text="Change Photo Style: " + style)
         
-    button.config(text="Change Photo Style: " + style)
 
 def quitProgram():
     root.destroy()
@@ -233,16 +238,21 @@ def openMenu(event):
         Grid.rowconfigure(menuCanvas, row_index, weight=1)
         for col_index in range(2):
             Grid.columnconfigure(menuCanvas, col_index, weight=1)
+            
+    if pictureMode == 0:
+        currentStyle = numberedStyle
+    else:
+        currentStyle = style
     
-    button0 = Button(menuCanvas, text="Quit Program", command=quitProgram)
-    button1 = Button(menuCanvas, text="Close Menu", command=lambda: closeMenu(menuCanvas))
-    button2 = Button(menuCanvas, text="Change Photo Style: " + style, command=lambda: changeStyle(button2))
-    button3 = Button(menuCanvas, text="Change Photo Mode: " + str(pictureMode), command=lambda: changePictureMode(button3))
+    quitButton = Button(menuCanvas, text="Quit Program", command=quitProgram)
+    closeMenuButton = Button(menuCanvas, text="Close Menu", command=lambda: closeMenu(menuCanvas))
+    changeStyleButton = Button(menuCanvas, text="Change Photo Style: " + currentStyle, command=lambda: changeStyle(changeStyleButton))
+    changeModeButton = Button(menuCanvas, text="Change Photo Mode: " + str(pictureMode), command=lambda: changePictureMode(changeStyleButton, changeModeButton))
     
-    button0.grid(row=0, column=0, sticky="NESW")
-    button1.grid(row=1, column=0, sticky="NESW")
-    button2.grid(row=0, column=1, sticky="NESW")
-    button3.grid(row=1, column=1, sticky="NESW")
+    quitButton.grid(row=0, column=0, sticky="NESW")
+    closeMenuButton.grid(row=1, column=0, sticky="NESW")
+    changeStyleButton.grid(row=0, column=1, sticky="NESW")
+    changeModeButton.grid(row=1, column=1, sticky="NESW")
     
 # bind screen press for menu open
 canvas.bind("<ButtonPress-1>", openMenu)
